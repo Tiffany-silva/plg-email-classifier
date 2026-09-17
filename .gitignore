@@ -1,0 +1,19 @@
+# Environment
+.env
+
+# Build output
+/server
+/bin/
+*.exe
+
+# Test output
+*.test
+*.out
+coverage.html
+coverage.out
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

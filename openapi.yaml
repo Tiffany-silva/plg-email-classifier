@@ -1,0 +1,107 @@
+openapi: 3.0.1
+info:
+  title: Email Classification API
+  version: 1.0.0
+  description: >
+    Classifies a signup email into a category and a 0-100 lead-quality rating
+    for PLG customer-success triage.
+servers:
+  - url: "{server}:{port}/"
+    variables:
+      server:
+        default: http://localhost
+      port:
+        default: "8080"
+paths:
+  /health:
+    get:
+      summary: Health check endpoint.
+      operationId: getHealth
+      security: []
+      responses:
+        "200":
+          description: Ok
+  /classify-email:
+    post:
+      summary: Classify a signup email and return a lead-quality rating.
+      operationId: postClassifyEmail
+      requestBody:
+        description: The email address to classify.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassifyEmailRequest'
+      responses:
+        "200":
+          description: The classification result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailClassification'
+        "400":
+          description: BadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+        "413":
+          description: RequestEntityTooLarge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    ClassifyEmailRequest:
+      type: object
+      required: [email]
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          description: The email address to classify.
+    EmailClassification:
+      type: object
+      properties:
+        email: {type: string}
+        domain: {type: string}
+        category:
+          type: string
+          enum: [corporate, personal, provider_testing, disposable, unknown, invalid]
+        rating: {type: integer, description: "Lead-quality score, 0-100."}
+        confidence: {type: number, description: "Certainty, 0-1."}
+        source: {type: string, enum: [rules, cache, llm]}
+        signals:
+          type: object
+          properties:
+            syntaxValid: {type: boolean}
+            mxValid: {type: boolean}
+            disposable: {type: boolean}
+            freeProvider: {type: boolean}
+            roleBased: {type: boolean}
+        reasoning: {type: string}
+    ErrorPayload:
+      type: object
+      properties:
+        message:
+          type: string
+security:
+  - apiKey: []

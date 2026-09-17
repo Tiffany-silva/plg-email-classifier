@@ -1,0 +1,10 @@
+# Seed disposable-domain list. Loaded at startup and merged with the built-in
+# seed; the background refresher overwrites this file from DISPOSABLE_LIST_URL
+# every DISPOSABLE_REFRESH_INTERVAL. One domain per line; '#' lines ignored.
+mailinator.com
+guerrillamail.com
+10minutemail.com
+tempmail.com
+yopmail.com
+prodbits.com
+atomicmail.io
